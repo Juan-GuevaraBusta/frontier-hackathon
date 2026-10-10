@@ -307,6 +307,12 @@
       "skillPath": "skills/swarm/SKILL.md",
       "computedHash": "083f0bd5896a91338b2e21f4c4db6a17d14e38f7cb3a09be2e6678f7f7484dbb"
     },
+    "system-design": {
+      "source": "anthropics/knowledge-work-plugins",
+      "sourceType": "github",
+      "skillPath": "engineering/skills/system-design/SKILL.md",
+      "computedHash": "5915b5f79ae74f20473c4922075b091f290374d26b26c927af9c767102424ac4"
+    },
     "tdd": {
       "source": "backnotprop/pstack",
       "sourceType": "github",
