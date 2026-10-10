@@ -1,0 +1,376 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1600" viewBox="0 0 2400 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitectura del agente de computer use sobre VNC</title>
+  <desc id="desc">Arquitectura AWS y flujo multiagéntico con API Gateway, EC2, LangGraph, Redis, VNC, modelos visuales, LangSmith y Langfuse.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Inter, Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px Inter, Arial, sans-serif; fill: #475569; }
+      .zone-title { font: 700 18px Inter, Arial, sans-serif; fill: #334155; letter-spacing: 1px; }
+      .label { font: 700 16px Inter, Arial, sans-serif; fill: #0f172a; }
+      .small { font: 400 13px Inter, Arial, sans-serif; fill: #475569; }
+      .tiny { font: 500 12px Inter, Arial, sans-serif; fill: #475569; }
+      .white-label { font: 700 16px Inter, Arial, sans-serif; fill: #ffffff; }
+      .white-small { font: 500 12px Inter, Arial, sans-serif; fill: #ffffff; }
+      .step-num { font: 700 17px Inter, Arial, sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; rx: 16; }
+      .soft-box { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; rx: 18; }
+      .aws-zone { fill: #fffaf0; stroke: #f59e0b; stroke-width: 3; rx: 22; }
+      .ec2-zone { fill: #fff7ed; stroke: #ed7100; stroke-width: 3; rx: 20; }
+      .agent-zone { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 18; }
+      .external-zone { fill: #f8fafc; stroke: #64748b; stroke-width: 2; stroke-dasharray: 9 7; rx: 22; }
+      .main-edge { fill: none; stroke: #334155; stroke-width: 3; marker-end: url(#arrow); }
+      .data-edge { fill: none; stroke: #2563eb; stroke-width: 3; marker-end: url(#arrowBlue); }
+      .verify-edge { fill: none; stroke: #15803d; stroke-width: 3; marker-end: url(#arrowGreen); }
+      .async-edge { fill: none; stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+      .danger-edge { fill: none; stroke: #dc2626; stroke-width: 2.5; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+      .edge-label-bg { fill: #f8fafc; rx: 6; }
+    </style>
+  </defs>
+
+  <rect width="2400" height="1600" fill="#f8fafc"/>
+  <rect x="34" y="28" width="2332" height="1544" rx="24" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+
+  <text x="76" y="86" class="title">Agente de computer use sobre VNC</text>
+  <text x="76" y="119" class="subtitle">Arquitectura AWS, runtime LangGraph y ciclo seguro de acción/verificación · versión 1.0</text>
+
+  <g transform="translate(1760 55)">
+    <line x1="0" y1="0" x2="56" y2="0" class="main-edge"/>
+    <text x="68" y="5" class="tiny">Flujo principal</text>
+    <line x1="205" y1="0" x2="261" y2="0" class="data-edge"/>
+    <text x="273" y="5" class="tiny">Datos visuales</text>
+    <line x1="415" y1="0" x2="471" y2="0" class="async-edge"/>
+    <text x="483" y="5" class="tiny">Telemetría</text>
+  </g>
+
+  <rect x="70" y="170" width="270" height="1090" class="external-zone"/>
+  <text x="98" y="205" class="zone-title">CLIENTE</text>
+
+  <g transform="translate(105 265)">
+    <rect width="200" height="170" class="box"/>
+    <circle cx="100" cy="47" r="25" fill="#334155"/>
+    <path d="M75 112 Q100 76 125 112 L125 133 L75 133 Z" fill="#64748b"/>
+    <text x="100" y="151" class="label" text-anchor="middle">Evaluador</text>
+    <text x="100" y="168" class="tiny" text-anchor="middle">poll cada 5 s</text>
+  </g>
+
+  <g transform="translate(98 535)">
+    <rect width="214" height="154" class="soft-box"/>
+    <text x="107" y="35" class="label" text-anchor="middle">Contrato público</text>
+    <text x="24" y="67" class="small">GET /health</text>
+    <text x="24" y="93" class="small">POST /tasks &lt; 2 s</text>
+    <text x="24" y="119" class="small">GET /tasks/{id}</text>
+    <text x="24" y="142" class="tiny">Bearer en todas las rutas</text>
+  </g>
+
+  <g transform="translate(98 795)">
+    <rect width="214" height="212" fill="#fef2f2" stroke="#fca5a5" stroke-width="2" rx="16"/>
+    <text x="107" y="34" class="label" text-anchor="middle">Invariantes</text>
+    <text x="20" y="68" class="small">" cero cambios extra</text>
+    <text x="20" y="96" class="small">" cero duplicados</text>
+    <text x="20" y="124" class="small">" no falso éxito</text>
+    <text x="20" y="152" class="small">" sin secretos</text>
+    <text x="20" y="180" class="small">" kill duro a 4:30</text>
+  </g>
+
+  <rect x="380" y="170" width="1240" height="1090" class="aws-zone"/>
+  <text x="414" y="205" class="zone-title">AWS CLOUD · REGIÓN ÚNICA</text>
+  <text x="414" y="229" class="tiny">VPC · ALB interno multi-AZ · EC2 con salida por Internet Gateway · sin SSH público</text>
+
+  <g transform="translate(430 260)">
+    <rect width="225" height="145" fill="#fff0f7" stroke="#e7157b" stroke-width="3" rx="18"/>
+    <rect x="20" y="25" width="54" height="54" rx="12" fill="#e7157b"/>
+    <circle cx="47" cy="52" r="8" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <path d="M47 34 V25 M47 79 V70 M29 52 H20 M74 52 H65 M34 39 L27 32 M67 72 L60 65 M60 39 L67 32 M27 72 L34 65" stroke="#ffffff" stroke-width="3"/>
+    <text x="90" y="47" class="label">Amazon</text>
+    <text x="90" y="68" class="label">API Gateway</text>
+    <text x="24" y="105" class="small">HTTPS regional</text>
+    <text x="24" y="127" class="tiny">TLS sin dominio propio</text>
+  </g>
+
+  <g transform="translate(720 260)">
+    <rect width="250" height="145" fill="#f5f3ff" stroke="#8c4fff" stroke-width="3" rx="18"/>
+    <rect x="20" y="25" width="54" height="54" rx="12" fill="#8c4fff"/>
+    <path d="M33 40 H61 M33 52 H61 M33 64 H61 M28 35 L33 40 L28 45 M66 47 L61 52 L66 57 M28 59 L33 64 L28 69" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="91" y="47" class="label">VPC Link</text>
+    <text x="91" y="68" class="label">+ ALB interno</text>
+    <text x="24" y="105" class="small">origen no público</text>
+    <text x="24" y="127" class="tiny">Security Groups mínimos</text>
+  </g>
+
+  <rect x="1015" y="230" width="555" height="940" class="ec2-zone"/>
+  <text x="1048" y="266" class="zone-title">EC2 t3.medium · EBS CIFRADO</text>
+
+  <g transform="translate(1060 305)">
+    <rect width="212" height="116" fill="#fff7ed" stroke="#ed7100" stroke-width="2.5" rx="16"/>
+    <rect x="18" y="23" width="48" height="48" rx="10" fill="#ed7100"/>
+    <path d="M28 34 H56 V60 H28 Z M34 40 H50 M34 47 H50 M34 54 H45" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="79" y="44" class="label">FastAPI</text>
+    <text x="79" y="66" class="small">auth + validación</text>
+    <text x="20" y="94" class="tiny">rate limit + idempotencia</text>
+  </g>
+
+  <g transform="translate(1312 305)">
+    <rect width="212" height="116" fill="#fff7ed" stroke="#ed7100" stroke-width="2.5" rx="16"/>
+    <circle cx="43" cy="48" r="22" fill="#ed7100"/>
+    <path d="M43 35 V49 L53 56" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <text x="79" y="44" class="label">Supervisor</text>
+    <text x="79" y="66" class="small">proceso por tarea</text>
+    <text x="20" y="94" class="tiny">watchdog externo 4:30</text>
+  </g>
+
+  <rect x="1060" y="470" width="464" height="445" class="agent-zone"/>
+  <text x="1087" y="502" class="zone-title">LANGGRAPH · LOOP CONTROLADO</text>
+
+  <g transform="translate(1090 535)">
+    <rect width="128" height="72" class="box"/>
+    <circle cx="30" cy="36" r="17" fill="#2563eb"/>
+    <path d="M21 36 H39 M30 27 V45" stroke="#ffffff" stroke-width="3"/>
+    <text x="57" y="31" class="label">Observar</text>
+    <text x="57" y="51" class="tiny">OCR + grid</text>
+  </g>
+
+  <g transform="translate(1262 535)">
+    <rect width="128" height="72" class="box"/>
+    <circle cx="30" cy="36" r="17" fill="#7c3aed"/>
+    <path d="M22 35 Q30 21 38 35 Q30 49 22 35" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="57" y="31" class="label">Planner</text>
+    <text x="57" y="51" class="tiny">1 paso</text>
+  </g>
+
+  <g transform="translate(1090 655)">
+    <rect width="128" height="72" class="box"/>
+    <path d="M30 18 L47 27 V39 C47 51 39 58 30 62 C21 58 13 51 13 39 V27 Z" fill="#0f766e"/>
+    <path d="M21 39 L27 45 L40 31" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="57" y="31" class="label">Policy</text>
+    <text x="57" y="51" class="tiny">guardas</text>
+  </g>
+
+  <g transform="translate(1262 655)">
+    <rect width="128" height="72" class="box"/>
+    <circle cx="30" cy="36" r="17" fill="#ed7100"/>
+    <path d="M21 36 H39 M34 30 L40 36 L34 42" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="57" y="31" class="label">Executor</text>
+    <text x="57" y="51" class="tiny">tools</text>
+  </g>
+
+  <g transform="translate(1175 785)">
+    <rect width="156" height="76" class="box"/>
+    <circle cx="32" cy="38" r="18" fill="#15803d"/>
+    <path d="M22 38 L29 45 L43 29" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="63" y="33" class="label">Verifier</text>
+    <text x="63" y="54" class="tiny">postcondición</text>
+  </g>
+
+  <path d="M1218 571 H1262" class="main-edge"/>
+  <path d="M1326 607 V631 H1154 V655" class="main-edge"/>
+  <path d="M1218 691 H1262" class="main-edge"/>
+  <path d="M1326 727 V756 H1253 V785" class="verify-edge"/>
+  <path d="M1175 823 H1138 V607" class="verify-edge"/>
+
+  <g transform="translate(1060 965)">
+    <rect width="142" height="116" class="box"/>
+    <rect x="18" y="22" width="44" height="36" rx="6" fill="#2563eb"/>
+    <path d="M26 65 H54 M40 58 V65" stroke="#2563eb" stroke-width="3"/>
+    <text x="73" y="39" class="label">RFB</text>
+    <text x="73" y="59" class="tiny">py-wsvnc</text>
+    <text x="18" y="91" class="small">WSS + input</text>
+  </g>
+
+  <g transform="translate(1226 965)">
+    <rect width="142" height="116" class="box"/>
+    <ellipse cx="38" cy="32" rx="20" ry="9" fill="#dc2626"/>
+    <path d="M18 32 V58 C18 70 58 70 58 58 V32 M18 45 C18 57 58 57 58 45" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+    <text x="72" y="39" class="label">Redis</text>
+    <text x="72" y="59" class="tiny">loopback</text>
+    <text x="18" y="91" class="small">estado + memoria</text>
+  </g>
+
+  <g transform="translate(1392 965)">
+    <rect width="132" height="116" class="box"/>
+    <rect x="18" y="22" width="42" height="42" rx="8" fill="#7aa116"/>
+    <path d="M27 31 H51 V53 H27 Z M31 36 H47 M31 42 H47 M31 48 H43" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="70" y="39" class="label">EBS</text>
+    <text x="70" y="59" class="tiny">TTL 24 h</text>
+    <text x="18" y="91" class="small">screenshots</text>
+  </g>
+
+  <g transform="translate(430 500)">
+    <rect width="225" height="140" class="box"/>
+    <rect x="20" y="23" width="50" height="50" rx="12" fill="#dd344c"/>
+    <path d="M34 49 A12 12 0 1 1 56 42 L61 42 V57 H39 V52" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="86" y="44" class="label">Secrets Manager</text>
+    <text x="24" y="96" class="small">API token y claves</text>
+    <text x="24" y="119" class="tiny">IAM role · sin hardcode</text>
+  </g>
+
+  <g transform="translate(720 500)">
+    <rect width="250" height="140" class="box"/>
+    <rect x="20" y="23" width="50" height="50" rx="12" fill="#759c3e"/>
+    <path d="M29 59 L38 48 L46 54 L61 35" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="87" y="44" class="label">CloudWatch</text>
+    <text x="24" y="96" class="small">salud, CPU y alertas</text>
+    <text x="24" y="119" class="tiny">logs estructurados redactados</text>
+  </g>
+
+  <g transform="translate(430 735)">
+    <rect width="540" height="300" fill="#f0fdf4" stroke="#86efac" stroke-width="2" rx="18"/>
+    <text x="28" y="38" class="zone-title">CONTROLES DE SEGURIDAD</text>
+    <g transform="translate(30 66)">
+      <circle cx="16" cy="16" r="16" fill="#15803d"/><text x="16" y="17" class="step-num">1</text>
+      <text x="44" y="11" class="label">Entrada estricta</text>
+      <text x="44" y="31" class="small">Bearer, esquemas, límites y SSRF</text>
+    </g>
+    <g transform="translate(30 128)">
+      <circle cx="16" cy="16" r="16" fill="#15803d"/><text x="16" y="17" class="step-num">2</text>
+      <text x="44" y="11" class="label">Escritura protegida</text>
+      <text x="44" y="31" class="small">dedupe, objetivo único y scope</text>
+    </g>
+    <g transform="translate(30 190)">
+      <circle cx="16" cy="16" r="16" fill="#15803d"/><text x="16" y="17" class="step-num">3</text>
+      <text x="44" y="11" class="label">Éxito verificable</text>
+      <text x="44" y="31" class="small">releer antes de finalizar</text>
+    </g>
+    <g transform="translate(30 252)">
+      <circle cx="16" cy="16" r="16" fill="#15803d"/><text x="16" y="17" class="step-num">4</text>
+      <text x="44" y="11" class="label">Cierre primero</text>
+      <text x="44" y="31" class="small">cerrar VNC antes de estado terminal</text>
+    </g>
+  </g>
+
+  <rect x="1660" y="170" width="670" height="1090" class="external-zone"/>
+  <text x="1694" y="205" class="zone-title">SISTEMAS EXTERNOS CONTROLADOS</text>
+
+  <g transform="translate(1710 255)">
+    <rect width="570" height="185" fill="#eff6ff" stroke="#2563eb" stroke-width="3" rx="20"/>
+    <rect x="28" y="35" width="78" height="62" rx="10" fill="#2563eb"/>
+    <rect x="36" y="43" width="62" height="43" fill="#dbeafe"/>
+    <path d="M53 110 H81 M67 97 V110" stroke="#2563eb" stroke-width="4"/>
+    <text x="133" y="57" class="label">Escritorio VNC 1280×800</text>
+    <text x="133" y="84" class="small">Aplicación desconocida en modo kiosko</text>
+    <text x="133" y="110" class="small">Solo píxeles, mouse y teclado</text>
+    <text x="28" y="151" class="tiny">wss://.../websockify · credencial solo en memoria del proceso</text>
+  </g>
+
+  <g transform="translate(1710 505)">
+    <rect width="570" height="278" fill="#faf5ff" stroke="#a855f7" stroke-width="2.5" rx="20"/>
+    <text x="28" y="38" class="zone-title">RAZONAMIENTO VISUAL</text>
+    <g transform="translate(30 67)">
+      <rect width="235" height="82" class="box"/>
+      <circle cx="38" cy="41" r="22" fill="#7c3aed"/>
+      <path d="M26 41 Q38 25 50 41 Q38 57 26 41" fill="none" stroke="#ffffff" stroke-width="3"/>
+      <text x="75" y="34" class="label">OpenRouter</text>
+      <text x="75" y="57" class="small">modelo fijado · ZDR</text>
+    </g>
+    <g transform="translate(305 67)">
+      <rect width="235" height="82" class="box"/>
+      <circle cx="38" cy="41" r="22" fill="#6d28d9"/>
+      <path d="M26 41 H50 M38 29 V53" stroke="#ffffff" stroke-width="3"/>
+      <text x="75" y="34" class="label">VLM directo</text>
+      <text x="75" y="57" class="small">fallback independiente</text>
+    </g>
+    <text x="30" y="184" class="small">Planner propone; Verifier comprueba.</text>
+    <text x="30" y="211" class="small">Ningún proveedor ejecuta computer use.</text>
+    <text x="30" y="240" class="tiny">No reciben password, token ni headers.</text>
+  </g>
+
+  <g transform="translate(1710 850)">
+    <rect width="570" height="290" fill="#f8fafc" stroke="#94a3b8" stroke-width="2.5" rx="20"/>
+    <text x="28" y="38" class="zone-title">OBSERVABILIDAD Y EVALUACIÓN</text>
+    <g transform="translate(30 66)">
+      <rect width="235" height="90" class="box"/>
+      <circle cx="40" cy="45" r="22" fill="#0f766e"/>
+      <path d="M27 45 H53 M40 32 V58" stroke="#ffffff" stroke-width="3"/>
+      <text x="77" y="38" class="label">LangSmith</text>
+      <text x="77" y="61" class="small">trazas redactadas</text>
+    </g>
+    <g transform="translate(305 66)">
+      <rect width="235" height="90" class="box"/>
+      <circle cx="40" cy="45" r="22" fill="#334155"/>
+      <path d="M28 52 L36 44 L43 49 L53 35" fill="none" stroke="#ffffff" stroke-width="3"/>
+      <text x="77" y="38" class="label">Langfuse</text>
+      <text x="77" y="61" class="small">datasets + evals</text>
+    </g>
+    <text x="30" y="196" class="small">Screenshots permanecen en EBS.</text>
+    <text x="30" y="223" class="small">Redis es la memoria operacional.</text>
+    <text x="30" y="252" class="tiny">Métricas: éxito, daño, tiempo, costo y grounding.</text>
+  </g>
+
+  <path d="M305 350 H430" class="main-edge"/>
+  <rect x="343" y="319" width="72" height="24" class="edge-label-bg"/>
+  <text x="379" y="336" class="tiny" text-anchor="middle">HTTPS</text>
+
+  <path d="M655 332 H720" class="main-edge"/>
+  <path d="M970 332 H1015 L1060 353" class="main-edge"/>
+  <path d="M1272 363 H1312" class="main-edge"/>
+  <path d="M1418 421 V452 H1292 V470" class="main-edge"/>
+
+  <path d="M1202 1023 H1000 V405 H1710" class="data-edge"/>
+  <rect x="1534" y="386" width="123" height="24" class="edge-label-bg"/>
+  <text x="1595" y="403" class="tiny" text-anchor="middle">acciones RFB</text>
+
+  <path d="M1710 430 H1592 V550 H1218" class="data-edge"/>
+  <rect x="1530" y="520" width="126" height="24" class="edge-label-bg"/>
+  <text x="1593" y="537" class="tiny" text-anchor="middle">frames estables</text>
+
+  <path d="M1390 571 H1600 V610 H1710" class="async-edge"/>
+  <rect x="1497" y="579" width="125" height="24" class="edge-label-bg"/>
+  <text x="1559" y="596" class="tiny" text-anchor="middle">prompt visual</text>
+
+  <path d="M1331 823 H1625 V965 H1710" class="async-edge"/>
+  <rect x="1493" y="934" width="158" height="24" class="edge-label-bg"/>
+  <text x="1572" y="951" class="tiny" text-anchor="middle">spans permitidos</text>
+
+  <path d="M655 570 H1000 V352 H1060" class="async-edge"/>
+  <path d="M970 570 H1000 V1110 H1392" class="async-edge"/>
+
+  <path d="M1272 388 V944 H1297 V965" class="async-edge"/>
+  <path d="M1418 421 V944 H1458 V965" class="async-edge"/>
+
+  <g transform="translate(70 1330)">
+    <rect width="2260" height="190" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2" rx="20"/>
+    <text x="30" y="34" class="zone-title">FLUJO DE UNA TAREA · LECTURA DE IZQUIERDA A DERECHA</text>
+    <g transform="translate(35 66)">
+      <circle cx="18" cy="18" r="18" fill="#2563eb"/><text x="18" y="19" class="step-num">1</text>
+      <text x="45" y="14" class="label">Recibir</text><text x="45" y="35" class="tiny">auth + validar</text>
+    </g>
+    <g transform="translate(305 66)">
+      <circle cx="18" cy="18" r="18" fill="#2563eb"/><text x="18" y="19" class="step-num">2</text>
+      <text x="45" y="14" class="label">Encolar</text><text x="45" y="35" class="tiny">task_id &lt; 2 s</text>
+    </g>
+    <g transform="translate(575 66)">
+      <circle cx="18" cy="18" r="18" fill="#2563eb"/><text x="18" y="19" class="step-num">3</text>
+      <text x="45" y="14" class="label">Conectar</text><text x="45" y="35" class="tiny">VNC por WSS</text>
+    </g>
+    <g transform="translate(845 66)">
+      <circle cx="18" cy="18" r="18" fill="#7c3aed"/><text x="18" y="19" class="step-num">4</text>
+      <text x="45" y="14" class="label">Observar</text><text x="45" y="35" class="tiny">frame + OCR</text>
+    </g>
+    <g transform="translate(1115 66)">
+      <circle cx="18" cy="18" r="18" fill="#0f766e"/><text x="18" y="19" class="step-num">5</text>
+      <text x="45" y="14" class="label">Decidir</text><text x="45" y="35" class="tiny">plan + policy</text>
+    </g>
+    <g transform="translate(1385 66)">
+      <circle cx="18" cy="18" r="18" fill="#ed7100"/><text x="18" y="19" class="step-num">6</text>
+      <text x="45" y="14" class="label">Actuar</text><text x="45" y="35" class="tiny">tool acotada</text>
+    </g>
+    <g transform="translate(1655 66)">
+      <circle cx="18" cy="18" r="18" fill="#15803d"/><text x="18" y="19" class="step-num">7</text>
+      <text x="45" y="14" class="label">Verificar</text><text x="45" y="35" class="tiny">efecto visible</text>
+    </g>
+    <g transform="translate(1925 66)">
+      <circle cx="18" cy="18" r="18" fill="#334155"/><text x="18" y="19" class="step-num">8</text>
+      <text x="45" y="14" class="label">Cerrar</text><text x="45" y="35" class="tiny">VNC antes del final</text>
+    </g>
+    <path d="M190 84 H292 M460 84 H562 M730 84 H832 M1000 84 H1102 M1270 84 H1372 M1540 84 H1642 M1810 84 H1912" class="main-edge"/>
+    <text x="30" y="159" class="small">Si aparece ambigüedad, peligro, timeout o evidencia insuficiente: cerrar VNC y responder fallida con hechos seguros.</text>
+  </g>
+</svg>
